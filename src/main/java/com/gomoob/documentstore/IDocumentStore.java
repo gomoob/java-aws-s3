@@ -86,7 +86,7 @@ public interface IDocumentStore {
     /**
      * Find a file associated to a specified key name.
      *
-     * @param string $keyName the key name used to find the file in the document store.
+     * @param keyName the key name used to find the file in the document store.
      *
      * @return the found file or <code>null</code>.
      */
