@@ -83,7 +83,10 @@ public class S3DocumentStore implements IDocumentStore {
 
         // Puts the file on Amazon S3
         PutObjectRequest putObjectRequest = PutObjectRequest.builder().bucket(this.bucket).key(prefixedKeyName).build();
-        this.s3.putObject(putObjectRequest, RequestBody.of(file));
+
+        RequestBody requestBody = RequestBody.of(file);
+        this.s3.putObject(putObjectRequest, requestBody);
+        requestBody.asStream().close();
 
     }
 
