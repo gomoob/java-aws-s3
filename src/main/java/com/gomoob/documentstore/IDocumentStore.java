@@ -47,26 +47,27 @@ public interface IDocumentStore {
      * </p>
      *
      * @param serverFilePath the path to the uploaded file to copy into the document store.
-     * @param keyName the key name to be given to the new file to create. The keyname is a string which has a format
+     * @param keyName the key name to be given to the new file to create. The keyn ame is a string which has a format
      *            which is the same as a relative file path.
+     *
+     * @throws IOException if an input / output error occurs while downloading or creating the file.
      */
     public void createFromUploadedFile(final String serverFilePath, final String keyName) throws IOException;
 
     /**
      * Deletes a file associated to a specified key name.
      *
-     * @param string $keyName the key name used to find the file to delete from the store.
+     * @param keyName the key name used to find the file to delete from the store.
      *
-     * @throws IllegalStateException If no file having a key name equal to <tt>$keyName</tt> has been found on the
-     *             store.
-     * @throws IOException If the function has failed to delete the file having key name <tt>$keyName</tt> from the
+     * @throws IllegalStateException If no file having a key name equal to <tt>keyName</tt> has been found on the store.
+     * @throws IOException If the function has failed to delete the file having key name <tt>keyName</tt> from the
      *             store.
      */
     public void delete(final String keyName);
 
     /**
      * Download a file associated to a specified key name to a generic destination. The destination is expressed using a
-     * normal file path or a custom URL to "download" the file using SFTP or an other mecanism (the supported
+     * normal file path or a custom URL to "download" the file using SFTP or an other mechanism (the supported
      * destinations depends on the implementations of the document store in use).
      *
      * <p>

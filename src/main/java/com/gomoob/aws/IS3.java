@@ -43,7 +43,7 @@ import software.amazon.awssdk.services.s3.S3Client;
  * @author Baptiste GAILLARD (baptiste.gaillard@gomoob.com)
  * @author Jiaming LIANG (jiaming.liang@gomoob.com)
  *
- * @see https://github.com/aws/aws-sdk-java-v2
+ * @see <a href="https://github.com/aws/aws-sdk-java-v2">https://github.com/aws/aws-sdk-java-v2</a>
  */
 public interface IS3 extends S3Client {
     // Empty
