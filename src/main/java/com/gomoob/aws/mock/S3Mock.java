@@ -23,47 +23,51 @@
  * WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package com.gomoob.aws.s3;
+package com.gomoob.aws.mock;
+
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 import com.gomoob.aws.IS3;
 
-import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.SdkClientException;
 import software.amazon.awssdk.services.s3.model.GetObjectRequest;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 import software.amazon.awssdk.services.s3.model.PutObjectResponse;
 import software.amazon.awssdk.sync.RequestBody;
 import software.amazon.awssdk.sync.StreamingResponseHandler;
+import software.amazon.awssdk.utils.IoUtils;
 
 /**
- * An implementation for the {@link IS3} interface which uses the {@link S3Client} Amazon Java SDK class.
+ * An implementation for the {@link IS3} interface which acts as a mock and allow to write unit test on Amazon S3 JAVA
+ * SDK functions without being connected to S3.
  *
- * @author Baptiste GAILLARD (baptiste.gaillard@gomoob.com)
- *
- * @see https://github.com/aws/aws-sdk-java-v2
+ * @author Jiaming LIANG (jiaming.liang@gomoob.com)
  */
-public class S3 implements IS3 {
+public class S3Mock implements IS3 {
 
     /**
-     * An Amazon S3 client used to request the Amazon Web Services.
-     */
-    protected S3Client s3Client;
-
-    /**
-     * Creates a new {@link S3} instance.
+     * Utility map which allows to emulate Amazon S3 buckets.
      *
-     * @param s3Client the Amazon S3 client to which one to delegate calls and request the Amazon S3 Web Services.
+     * <p>
+     * This map maps bucket names to bucket contents.
+     * </p>
+     * <p>
+     * The value associated to the parent map represents a whole Amazon S3 bucket where keys represents Amazon S3
+     * keynames and values the associated object content.
+     * </p>
      */
-    public S3(final S3Client s3Client) {
-        this.s3Client = s3Client;
-    }
+    private Map<String, Map<String, Object>> buckets = new HashMap<>();
 
     /**
      * {@inheritDoc}
      */
     @SuppressWarnings("rawtypes")
     @Override
-    public <ReturnT> ReturnT getObject(GetObjectRequest getObjectRequest, StreamingResponseHandler streamingHandler) {
-        return this.s3Client.getObject(getObjectRequest, streamingHandler);
+    public <ReturnT> ReturnT getObject(final GetObjectRequest getObjectRequest,
+            final StreamingResponseHandler streamingHandler) {
+        return null;
     }
 
     /**
@@ -71,7 +75,25 @@ public class S3 implements IS3 {
      */
     @Override
     public PutObjectResponse putObject(final PutObjectRequest putObjectRequest, final RequestBody requestBody) {
-        return this.s3Client.putObject(putObjectRequest, requestBody);
+
+        // this.mockAddMethodCall(__FUNCTION__, ['options' => $options]);
+
+        // Creates an empty fake bucket if it does not exists
+        if (!this.buckets.containsKey(putObjectRequest.bucket())) {
+            this.buckets.put(putObjectRequest.bucket(), new HashMap<String, Object>());
+        }
+
+        // Put the content of the file into the fake bucket
+        try {
+            this.buckets.get(putObjectRequest.bucket()).put(putObjectRequest.key(),
+                    IoUtils.toByteArray(requestBody.asStream()));
+        } catch (IOException ioex) {
+            throw new SdkClientException(ioex);
+        }
+
+        // Create a fake Amazon S3 response
+        PutObjectResponse putObjectResponse = PutObjectResponse.builder().build();
+        return putObjectResponse;
     }
 
     /**
