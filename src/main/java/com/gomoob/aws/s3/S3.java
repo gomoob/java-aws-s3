@@ -28,7 +28,11 @@ package com.gomoob.aws.s3;
 import com.gomoob.aws.IS3;
 
 import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
+import software.amazon.awssdk.services.s3.model.DeleteObjectResponse;
 import software.amazon.awssdk.services.s3.model.GetObjectRequest;
+import software.amazon.awssdk.services.s3.model.ListObjectsRequest;
+import software.amazon.awssdk.services.s3.model.ListObjectsResponse;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 import software.amazon.awssdk.services.s3.model.PutObjectResponse;
 import software.amazon.awssdk.sync.RequestBody;
@@ -60,10 +64,26 @@ public class S3 implements IS3 {
     /**
      * {@inheritDoc}
      */
+    @Override
+    public DeleteObjectResponse deleteObject(final DeleteObjectRequest deleteObjectRequest) {
+        return this.s3Client.deleteObject(deleteObjectRequest);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     @SuppressWarnings("rawtypes")
     @Override
     public <ReturnT> ReturnT getObject(GetObjectRequest getObjectRequest, StreamingResponseHandler streamingHandler) {
         return this.s3Client.getObject(getObjectRequest, streamingHandler);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public ListObjectsResponse listObjects(ListObjectsRequest listObjectsRequest) {
+        return this.s3Client.listObjects(listObjectsRequest);
     }
 
     /**

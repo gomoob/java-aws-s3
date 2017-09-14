@@ -4,7 +4,7 @@
 
 [![Build Status](https://img.shields.io/travis/gomoob/java-aws-s3.svg?style=flat)](https://travis-ci.org/gomoob/java-aws-s3)
 
-The Gomoob Java Amazon Web Services S3 library contains utility class to work with the Amazon S3 Java SDK.
+The Gomoob Java Amazon Web Services S3 library contains utility classes to work with the Amazon S3 Java SDK.
 
 ## Setup
 

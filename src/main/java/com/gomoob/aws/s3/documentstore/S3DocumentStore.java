@@ -27,19 +27,28 @@ package com.gomoob.aws.s3.documentstore;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Date;
 
-import com.gomoob.aws.IDocumentStore;
 import com.gomoob.aws.IS3;
+import com.gomoob.documentstore.IDocumentStore;
+import com.gomoob.documentstore.IDocumentStoreFile;
+import com.gomoob.documentstore.filesystem.DocumentStoreFile;
 
+import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
+import software.amazon.awssdk.services.s3.model.GetObjectRequest;
+import software.amazon.awssdk.services.s3.model.ListObjectsRequest;
+import software.amazon.awssdk.services.s3.model.ListObjectsResponse;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
+import software.amazon.awssdk.services.s3.model.S3Object;
 import software.amazon.awssdk.sync.RequestBody;
+import software.amazon.awssdk.sync.StreamingResponseHandler;
 
 /**
  * An Amazon S3 Implementation for the GOMOOB document store.
  *
  * @author Jiaming LIANG (jiaming.liang@gomoob.com)
  */
-public class DocumentStore implements IDocumentStore {
+public class S3DocumentStore implements IDocumentStore {
 
     /**
      * The name of the Amazon S3 Bucket to use.
@@ -75,12 +84,14 @@ public class DocumentStore implements IDocumentStore {
         // Puts the file on Amazon S3
         PutObjectRequest putObjectRequest = PutObjectRequest.builder().bucket(this.bucket).key(prefixedKeyName).build();
         this.s3.putObject(putObjectRequest, RequestBody.of(file));
+
     }
 
     /**
-     * {@inheritDoc}
+     * Gets the name of the Amazon S3 Bucket to use.
+     *
+     * @return the name of the Amazon S3 Bucket to use.
      */
-    @Override
     public String getBucket() {
         if (this.bucket == null) {
             throw new IllegalStateException("No bucket name has been configured !");
@@ -90,27 +101,78 @@ public class DocumentStore implements IDocumentStore {
     }
 
     /**
-     * {@inheritDoc}
+     * Sets the name of the bucket.
+     *
+     * @param bucket the name of the bucket.
      */
-    @Override
     public void setBucket(final String bucket) {
         this.bucket = bucket;
     }
 
     /**
-     * {@inheritDoc}
+     * Sets the prefix of key name of the bucket.
+     *
+     * @param keyNamePrefix the prefix of key name of the bucket.
      */
-    @Override
     public void setKeyNamePrefix(final String keyNamePrefix) {
         this.keyNamePrefix = keyNamePrefix;
+    }
+
+    /**
+     * Sets the instance of the GOMOOB Amazon S3 facade.
+     *
+     * @param s3 the instance of the GOMOOB Amazon S3 facade.
+     */
+    public void setS3(final IS3 s3) {
+        this.s3 = s3;
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public void setS3(final IS3 s3) {
-        this.s3 = s3;
+    public void delete(final String keyName) {
+        DeleteObjectRequest deleteObjectRequest = DeleteObjectRequest.builder().bucket(this.getBucket())
+                .key(this.createKeyNameWithPrefix(keyName)).build();
+        this.s3.deleteObject(deleteObjectRequest);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String download(final String keyName, final String destination) throws IOException {
+        File destinationFile = new File(destination);
+        GetObjectRequest getObjectRequest = GetObjectRequest.builder().bucket(this.getBucket())
+                .key(this.createKeyNameWithPrefix(keyName)).build();
+        this.s3.getObject(getObjectRequest, StreamingResponseHandler.toFile(destinationFile.toPath()));
+
+        return destinationFile.getAbsolutePath();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public IDocumentStoreFile find(final String keyName) {
+
+        IDocumentStoreFile documentStoreFile = null;
+
+        ListObjectsRequest listObjectsRequest = ListObjectsRequest.builder().bucket(this.getBucket())
+                .prefix(this.createKeyNameWithPrefix(keyName)).build();
+        ListObjectsResponse listObjectsResponse = this.s3.listObjects(listObjectsRequest);
+
+        // If one file has been found
+        if (listObjectsResponse.contents() != null && listObjectsResponse.contents().size() == 1) {
+            S3Object s3Object = listObjectsResponse.contents().get(0);
+            documentStoreFile = new DocumentStoreFile();
+            documentStoreFile.setKeyName(this.extractKeyNameWithoutPrefix(s3Object.key()));
+            documentStoreFile.setName(s3Object.key().substring(s3Object.key().lastIndexOf('/') + 1));
+            documentStoreFile.setLastAccessDate(null);
+            documentStoreFile.setLastUpdateDate(Date.from(s3Object.lastModified()));
+        }
+
+        return documentStoreFile;
     }
 
     /**
@@ -141,6 +203,23 @@ public class DocumentStore implements IDocumentStore {
         }
 
         return keyNameWithPrefix;
+    }
+
+    /**
+     * Extract the key name with the prefix from a key name with a prefix.
+     *
+     * @param keyNameWithPrefix the key name without prefix.
+     *
+     * @return the key name without prefix.
+     */
+    private String extractKeyNameWithoutPrefix(final String keyNameWithPrefix) {
+        String keyName = keyNameWithPrefix;
+
+        if (this.keyNamePrefix != null && this.keyNamePrefix.length() > 0) {
+            keyName = keyNameWithPrefix.substring(this.keyNamePrefix.length() + 1);
+        }
+
+        return keyName;
     }
 
 }

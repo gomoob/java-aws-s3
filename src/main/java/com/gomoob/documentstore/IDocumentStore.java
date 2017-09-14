@@ -23,7 +23,7 @@
  * WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package com.gomoob.aws;
+package com.gomoob.documentstore;
 
 import java.io.IOException;
 
@@ -53,31 +53,42 @@ public interface IDocumentStore {
     public void createFromUploadedFile(final String serverFilePath, final String keyName) throws IOException;
 
     /**
-     * Gets the name of the Amazon S3 Bucket to use.
+     * Deletes a file associated to a specified key name.
      *
-     * @return the name of the Amazon S3 Bucket to use.
+     * @param string $keyName the key name used to find the file to delete from the store.
+     *
+     * @throws IllegalStateException If no file having a key name equal to <tt>$keyName</tt> has been found on the
+     *             store.
+     * @throws IOException If the function has failed to delete the file having key name <tt>$keyName</tt> from the
+     *             store.
      */
-    public String getBucket();
+    public void delete(final String keyName);
 
     /**
-     * Sets the name of the bucket.
+     * Download a file associated to a specified key name to a generic destination. The destination is expressed using a
+     * normal file path or a custom URL to "download" the file using SFTP or an other mecanism (the supported
+     * destinations depends on the implementations of the document store in use).
      *
-     * @param bucket the name of the bucket.
+     * <p>
+     * NOTE: Please note that this function has not be named 'copy' because the 'copy' function is reserved to document
+     * copying on the document store itself and not outside the document store.
+     * </p>
+     *
+     * @param keyName the key name used to find the file to download to the destination.
+     * @param destination the place where to download the file.
+     *
+     * @return string the provided <tt>destination</tt> parameter if the download is successful.
+     *
+     * @throws IOException If the download operation has failed.
      */
-    public void setBucket(final String bucket);
+    public String download(final String keyName, final String destination) throws IOException;
 
     /**
-     * Sets the instance of the GOMOOB Amazon S3 facade.
+     * Find a file associated to a specified key name.
      *
-     * @param s3 the instance of the GOMOOB Amazon S3 facade.
-     */
-    public void setS3(final IS3 s3);
-
-    /**
-     * Sets the prefix of key name of the bucket.
+     * @param string $keyName the key name used to find the file in the document store.
      *
-     * @param keyNamePrefix the prefix of key name of the bucket.
+     * @return the found file or <code>null</code>.
      */
-    public void setKeyNamePrefix(final String keyNamePrefix);
-
+    public IDocumentStoreFile find(final String keyName);
 }
