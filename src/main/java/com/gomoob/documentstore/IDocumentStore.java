@@ -58,10 +58,6 @@ public interface IDocumentStore {
      * Deletes a file associated to a specified key name.
      *
      * @param keyName the key name used to find the file to delete from the store.
-     *
-     * @throws IllegalStateException If no file having a key name equal to <tt>keyName</tt> has been found on the store.
-     * @throws IOException If the function has failed to delete the file having key name <tt>keyName</tt> from the
-     *             store.
      */
     public void delete(final String keyName);
 
