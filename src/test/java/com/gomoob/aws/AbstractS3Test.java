@@ -66,7 +66,7 @@ public abstract class AbstractS3Test {
         this.testingProperties = new Properties();
 
         // If the test is executed in Travis get properties from special environment variables
-        if (System.getenv("TRAVIS").equals("true")) {
+        if (System.getenv("TRAVIS") != null && System.getenv("TRAVIS").equals("true")) {
             this.testingProperties.put("aws.key", System.getenv("AWS_KEY"));
             this.testingProperties.put("aws.secret", System.getenv("AWS_SECRET"));
             this.testingProperties.put("aws.region", System.getenv("AWS_REGION"));
