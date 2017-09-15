@@ -85,10 +85,17 @@ public class S3Mock implements IS3 {
 
         // Put the content of the file into the fake bucket
         try {
-            this.buckets.get(putObjectRequest.bucket()).put(putObjectRequest.key(),
-                    IoUtils.toByteArray(requestBody.asStream()));
+            byte[] byteArray = IoUtils.toByteArray(requestBody.asStream());
+            this.buckets.get(putObjectRequest.bucket()).put(putObjectRequest.key(), byteArray);
         } catch (IOException ioex) {
             throw new SdkClientException(ioex);
+        } finally {
+            try {
+                requestBody.asStream().close();
+            } catch (IOException ioex) {
+                // TODO Auto-generated catch block
+                ioex.printStackTrace();
+            }
         }
 
         // Create a fake Amazon S3 response

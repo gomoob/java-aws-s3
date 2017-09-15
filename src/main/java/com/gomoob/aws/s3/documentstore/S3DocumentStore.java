@@ -86,8 +86,6 @@ public class S3DocumentStore implements IDocumentStore {
 
         RequestBody requestBody = RequestBody.of(file);
         this.s3.putObject(putObjectRequest, requestBody);
-        requestBody.asStream().close();
-
     }
 
     /**
