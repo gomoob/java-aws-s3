@@ -26,6 +26,7 @@
 package com.gomoob.documentstore;
 
 import java.io.IOException;
+import java.io.InputStream;
 
 /**
  * Interface which acts as a facade to a document store.
@@ -52,7 +53,26 @@ public interface IDocumentStore {
      *
      * @throws IOException if an input / output error occurs while downloading or creating the file.
      */
-    public void createFromUploadedFile(final String serverFilePath, final String keyName) throws IOException;
+    public IDocumentStoreFile createFromUploadedFile(final String serverFilePath, final String keyName)
+            throws IOException;
+
+    /**
+     * Creates a new file in the document store by copying an uploaded file.
+     *
+     * <p>
+     * This function is used to create NEW file and throw an exception if the file to create already exists in the
+     * store.
+     * </p>
+     *
+     * @param serverFileInputStream the input stream of the file to copy into the document store.
+     * @param keyName the key name to be given to the new file to create. The keyn ame is a string which has a format
+     *            which is the same as a relative file path.
+     * @param fileSize the size of file.
+     *
+     * @throws IOException if an input / output error occurs while downloading or creating the file.
+     */
+    public IDocumentStoreFile createFromUploadedFile(final InputStream serverFileInputStream, final String keyName,
+            final long fileSize) throws IOException;
 
     /**
      * Deletes a file associated to a specified key name.

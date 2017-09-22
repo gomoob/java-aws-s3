@@ -67,7 +67,7 @@ public interface IDocumentStoreFile {
      *
      * @return the size of the file in bytes.
      */
-    public int getSize();
+    public long getSize();
 
     /**
      * Sets the key name which indicate where the file is stored in the document store.
@@ -100,7 +100,7 @@ public interface IDocumentStoreFile {
     /**
      * Sets the size of the file in bytes.
      *
-     * @param size the size of the file in bytes.
+     * @param fileSize the size of the file in bytes.
      */
-    public void setSize(final int size);
+    public void setSize(final long fileSize);
 }

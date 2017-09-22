@@ -27,6 +27,7 @@ package com.gomoob.aws.s3.documentstore;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Date;
 
 import com.gomoob.aws.IS3;
@@ -70,10 +71,21 @@ public class S3DocumentStore implements IDocumentStore {
      * {@inheritDoc}
      */
     @Override
-    public void createFromUploadedFile(final String serverFilePath, final String keyName) throws IOException {
+    public IDocumentStoreFile createFromUploadedFile(final InputStream serverFileInputStream, final String keyName,
+            final long fileSize) throws IOException {
 
-        // Create the prefixed key name
-        String prefixedKeyName = this.createKeyNameWithPrefix(keyName);
+        // Creates the request body
+        RequestBody requestBody = RequestBody.of(serverFileInputStream, fileSize);
+
+        return this.uploadToS3(requestBody, keyName, fileSize);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public IDocumentStoreFile createFromUploadedFile(final String serverFilePath, final String keyName)
+            throws IOException {
 
         // Checks the file
         File file = new File(serverFilePath);
@@ -81,11 +93,10 @@ public class S3DocumentStore implements IDocumentStore {
             throw new IOException("Fail to open file with path '" + serverFilePath + "' !");
         }
 
-        // Puts the file on Amazon S3
-        PutObjectRequest putObjectRequest = PutObjectRequest.builder().bucket(this.bucket).key(prefixedKeyName).build();
-
+        // Creates the request body
         RequestBody requestBody = RequestBody.of(file);
-        this.s3.putObject(putObjectRequest, requestBody);
+
+        return this.uploadToS3(requestBody, keyName, file.length());
     }
 
     /**
@@ -221,6 +232,37 @@ public class S3DocumentStore implements IDocumentStore {
         }
 
         return keyName;
+    }
+
+    /**
+     * Utility function used to put an object to S3.
+     *
+     * @param requestBody the request body to put.
+     * @param keyName the key name of the file.
+     * @param fileSize the size of the file.
+     *
+     * @return the document store file.
+     */
+    private IDocumentStoreFile uploadToS3(final RequestBody requestBody, final String keyName, final long fileSize) {
+
+        // Create the prefixed key name
+        String prefixedKeyName = this.createKeyNameWithPrefix(keyName);
+
+        // Puts the file on Amazon S3
+        PutObjectRequest putObjectRequest = PutObjectRequest.builder().bucket(this.bucket).key(prefixedKeyName).build();
+
+        this.s3.putObject(putObjectRequest, requestBody);
+
+        // Creates the Document Store File description to return
+        Date currentDate = new Date();
+        IDocumentStoreFile documentStoreFile = new DocumentStoreFile();
+        documentStoreFile.setKeyName(prefixedKeyName);
+        documentStoreFile.setLastAccessDate(currentDate);
+        documentStoreFile.setLastUpdateDate(currentDate);
+        documentStoreFile.setName(prefixedKeyName);
+        documentStoreFile.setSize(fileSize);
+
+        return documentStoreFile;
     }
 
 }

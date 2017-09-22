@@ -59,7 +59,7 @@ public class DocumentStoreFile implements IDocumentStoreFile {
     /**
      * The size of the file in bytes.
      */
-    private int size;
+    private long size;
 
     /**
      * {@inheritDoc}
@@ -97,7 +97,7 @@ public class DocumentStoreFile implements IDocumentStoreFile {
      * {@inheritDoc}
      */
     @Override
-    public int getSize() {
+    public long getSize() {
         return this.size;
     }
 
@@ -137,7 +137,7 @@ public class DocumentStoreFile implements IDocumentStoreFile {
      * {@inheritDoc}
      */
     @Override
-    public void setSize(final int size) {
+    public void setSize(final long size) {
         this.size = size;
     }
 }
