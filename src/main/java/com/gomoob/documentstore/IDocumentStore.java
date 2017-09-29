@@ -51,6 +51,8 @@ public interface IDocumentStore {
      * @param keyName the key name to be given to the new file to create. The keyn ame is a string which has a format
      *            which is the same as a relative file path.
      *
+     * @return an object which describes the file which have been uploaded on the document store.
+     *
      * @throws IOException if an input / output error occurs while downloading or creating the file.
      */
     public IDocumentStoreFile createFromUploadedFile(final String serverFilePath, final String keyName)
@@ -68,6 +70,8 @@ public interface IDocumentStore {
      * @param keyName the key name to be given to the new file to create. The keyn ame is a string which has a format
      *            which is the same as a relative file path.
      * @param fileSize the size of file.
+     *
+     * @return an object which describes the file which have been uploaded on the document store.
      *
      * @throws IOException if an input / output error occurs while downloading or creating the file.
      */
