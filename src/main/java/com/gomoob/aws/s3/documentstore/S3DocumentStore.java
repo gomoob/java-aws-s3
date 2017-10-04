@@ -113,6 +113,18 @@ public class S3DocumentStore implements IDocumentStore {
     }
 
     /**
+     * Gets the absolute url of the uploaded file having the key name.
+     *
+     * @param the key name of the uploaded file.
+     *
+     * @return the absolute url of the uploaded file.
+     */
+    public String getUrl(final String keyName) {
+
+        return "https://s3.amazonaws.com/" + this.bucket + "/" + this.createKeyNameWithPrefix(keyName);
+    }
+
+    /**
      * Sets the name of the bucket.
      *
      * @param bucket the name of the bucket.
@@ -254,6 +266,7 @@ public class S3DocumentStore implements IDocumentStore {
         this.s3.putObject(putObjectRequest, requestBody);
 
         // Creates the Document Store File description to return
+        // FIXME: problem of key name and prefixed key name for the attributes keyName and name.
         Date currentDate = new Date();
         IDocumentStoreFile documentStoreFile = new DocumentStoreFile();
         documentStoreFile.setKeyName(prefixedKeyName);
