@@ -120,7 +120,6 @@ public class S3DocumentStore implements IDocumentStore {
      * @return the absolute url of the uploaded file.
      */
     public String getUrl(final String keyName) {
-
         return "https://s3.amazonaws.com/" + this.bucket + "/" + this.createKeyNameWithPrefix(keyName);
     }
 
