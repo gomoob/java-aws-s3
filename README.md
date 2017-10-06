@@ -16,7 +16,7 @@ Add the following dependency to you `pom.xml` file.
 <dependency>
     <groupId>org.gomoob</groupId>
     <artifactId>aws-s3</artifactId>
-    <version>1.0.1</version>
+    <version>1.2.0</version>
 </dependency>
 ```
 
