@@ -32,6 +32,8 @@ import java.util.Map;
 import com.gomoob.aws.IS3;
 
 import software.amazon.awssdk.SdkClientException;
+import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
+import software.amazon.awssdk.services.s3.model.DeleteObjectResponse;
 import software.amazon.awssdk.services.s3.model.GetObjectRequest;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 import software.amazon.awssdk.services.s3.model.PutObjectResponse;
@@ -63,6 +65,22 @@ public class S3Mock implements IS3 {
     /**
      * {@inheritDoc}
      */
+    @Override
+    public DeleteObjectResponse deleteObject(final DeleteObjectRequest deleteObjectRequest) {
+
+        // Creates an empty fake bucket if it does not exists
+        this.initBucket(deleteObjectRequest.bucket());
+
+        // Deletes the object from the bucket
+        this.buckets.get(deleteObjectRequest.bucket()).remove(deleteObjectRequest.key());
+
+        // Create a fake Amazon S3 response
+        return DeleteObjectResponse.builder().build();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     @SuppressWarnings("rawtypes")
     @Override
     public <ReturnT> ReturnT getObject(final GetObjectRequest getObjectRequest,
@@ -79,9 +97,7 @@ public class S3Mock implements IS3 {
         // this.mockAddMethodCall(__FUNCTION__, ['options' => $options]);
 
         // Creates an empty fake bucket if it does not exists
-        if (!this.buckets.containsKey(putObjectRequest.bucket())) {
-            this.buckets.put(putObjectRequest.bucket(), new HashMap<String, Object>());
-        }
+        this.initBucket(putObjectRequest.bucket());
 
         // Put the content of the file into the fake bucket
         try {
@@ -99,8 +115,7 @@ public class S3Mock implements IS3 {
         }
 
         // Create a fake Amazon S3 response
-        PutObjectResponse putObjectResponse = PutObjectResponse.builder().build();
-        return putObjectResponse;
+        return PutObjectResponse.builder().build();
     }
 
     /**
@@ -109,5 +124,16 @@ public class S3Mock implements IS3 {
     @Override
     public void close() throws Exception {
         // Empty
+    }
+
+    /**
+     * Initialize a fake Amazon S3 Bucket.
+     * 
+     * @param bucket the name of the fake Amazon S3 Bucket to initialize.
+     */
+    private void initBucket(final String bucket) {
+        if (!this.buckets.containsKey(bucket)) {
+            this.buckets.put(bucket, new HashMap<String, Object>());
+        }
     }
 }

@@ -5,6 +5,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to
 [Semantic Versioning](http://semver.org/).
 
+## [1.2.0] - 2017-10-06
+ * Add a new `S3DocumentStore.getUrl(final String keyName)` function to create absolute Amazon S3 urls ; 
+ * Add an implementation for `S3Mock.deleteObject(final DeleteObjectRequest deleteObjectRequest)`.
+
 ## [1.1.0] - 2017-09-29
  * Now the `IDocumentStore.createFromUploadedFile(...)` methods return an `IDocumentStoreFile` which describes the
   file uploaded on the document store.
