@@ -115,7 +115,7 @@ public class S3DocumentStore implements IDocumentStore {
     /**
      * Gets the absolute url of the uploaded file having the key name.
      *
-     * @param the key name of the uploaded file.
+     * @param keyName the key name of the uploaded file.
      *
      * @return the absolute url of the uploaded file.
      */
