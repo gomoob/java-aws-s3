@@ -49,7 +49,7 @@ import software.amazon.awssdk.sync.StreamingResponseHandler;
  *
  * @author Jiaming LIANG (jiaming.liang@gomoob.com)
  */
-public class S3DocumentStore implements IDocumentStore {
+public class S3DocumentStore implements IDocumentStore<S3UploadConfig> {
 
     /**
      * The name of the Amazon S3 Bucket to use.
@@ -71,21 +71,17 @@ public class S3DocumentStore implements IDocumentStore {
      * {@inheritDoc}
      */
     @Override
-    public IDocumentStoreFile createFromUploadedFile(final InputStream serverFileInputStream, final String keyName,
-            final long fileSize) throws IOException {
-
-        // Creates the request body
-        RequestBody requestBody = RequestBody.of(serverFileInputStream, fileSize);
-
-        return this.uploadToS3(requestBody, keyName, fileSize);
+    public IDocumentStoreFile createFromUploadedFile(final String serverFilePath, final String keyName)
+            throws IOException {
+        return this.createFromUploadedFile(serverFilePath, keyName, new S3UploadConfig());
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public IDocumentStoreFile createFromUploadedFile(final String serverFilePath, final String keyName)
-            throws IOException {
+    public IDocumentStoreFile createFromUploadedFile(final String serverFilePath, final String keyName,
+            final S3UploadConfig uploadConfig) throws IOException {
 
         // Checks the file
         File file = new File(serverFilePath);
@@ -96,7 +92,21 @@ public class S3DocumentStore implements IDocumentStore {
         // Creates the request body
         RequestBody requestBody = RequestBody.of(file);
 
-        return this.uploadToS3(requestBody, keyName, file.length());
+        return this.uploadToS3(requestBody, keyName, file.length(), uploadConfig);
+
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public IDocumentStoreFile createFromUploadedFile(final InputStream serverFileInputStream, final String keyName,
+            final long fileSize) throws IOException {
+
+        // Creates the request body
+        RequestBody requestBody = RequestBody.of(serverFileInputStream, fileSize);
+
+        return this.uploadToS3(requestBody, keyName, fileSize, new S3UploadConfig());
     }
 
     /**
@@ -251,16 +261,19 @@ public class S3DocumentStore implements IDocumentStore {
      * @param requestBody the request body to put.
      * @param keyName the key name of the file.
      * @param fileSize the size of the file.
+     * @param uploadConfig additional upload configuration options.
      *
      * @return the document store file.
      */
-    private IDocumentStoreFile uploadToS3(final RequestBody requestBody, final String keyName, final long fileSize) {
+    private IDocumentStoreFile uploadToS3(final RequestBody requestBody, final String keyName, final long fileSize,
+            final S3UploadConfig uploadConfig) {
 
         // Create the prefixed key name
         String prefixedKeyName = this.createKeyNameWithPrefix(keyName);
 
         // Puts the file on Amazon S3
-        PutObjectRequest putObjectRequest = PutObjectRequest.builder().bucket(this.bucket).key(prefixedKeyName).build();
+        PutObjectRequest putObjectRequest = PutObjectRequest.builder().bucket(this.bucket).key(prefixedKeyName)
+                .metadata(uploadConfig.getMetadata()).build();
 
         this.s3.putObject(putObjectRequest, requestBody);
 

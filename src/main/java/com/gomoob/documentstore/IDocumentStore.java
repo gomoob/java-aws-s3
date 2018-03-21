@@ -37,7 +37,7 @@ import java.io.InputStream;
  *
  * @author Jiaming LIANG (jiaming.liang@gomoob.com)
  */
-public interface IDocumentStore {
+public interface IDocumentStore<UC extends IUploadConfig> {
 
     /**
      * Creates a new file in the document store by copying an uploaded file.
@@ -57,6 +57,26 @@ public interface IDocumentStore {
      */
     public IDocumentStoreFile createFromUploadedFile(final String serverFilePath, final String keyName)
             throws IOException;
+
+    /**
+     * Creates a new file in the document store by copying an uploaded file.
+     *
+     * <p>
+     * This function is used to create NEW file and throw an exception if the file to create already exists in the
+     * store.
+     * </p>
+     *
+     * @param serverFilePath the path to the uploaded file to copy into the document store.
+     * @param keyName the key name to be given to the new file to create. The keyn ame is a string which has a format
+     *            which is the same as a relative file path.
+     * @param uploadConfig additional upload configuration options.
+     *
+     * @return an object which describes the file which have been uploaded on the document store.
+     *
+     * @throws IOException if an input / output error occurs while downloading or creating the file.
+     */
+    public IDocumentStoreFile createFromUploadedFile(final String serverFilePath, final String keyName,
+            final UC uploadConfig) throws IOException;
 
     /**
      * Creates a new file in the document store by copying an uploaded file.
