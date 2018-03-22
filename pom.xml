@@ -36,7 +36,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.gomoob</groupId>
     <artifactId>aws-s3</artifactId>
-    <version>1.3.0</version>
+    <version>1.4.0</version>
     <packaging>jar</packaging>
     <name>Gomoob Java Amazon Web Services S3 library</name>
     <description>The Gomoob Java Amazon Web Services S3 library contains utility class to work with the Amazon S3 Java SDK.</description>

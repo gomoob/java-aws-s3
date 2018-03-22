@@ -5,6 +5,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to
 [Semantic Versioning](http://semver.org/).
 
+## [1.4.0] - 2018-03-22
+ * Add `setCacheControl(...)` / `getCacheControl()` and `setContentType(...)` / `getContentType()` methods in the
+   `S3UploadConfig` class.
+
 ## [1.3.0] - 2018-03-21
  * Allow the `IDocumentStore` to accept an `IUploadConfig` file to pass additional configuration properties
    while uploading a file.

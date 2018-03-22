@@ -37,9 +37,37 @@ import com.gomoob.documentstore.IUploadConfig;
 public class S3UploadConfig implements IUploadConfig {
 
     /**
+     * The Amazon S3 <tt>Cache-Control</tt> metadata to attach to the object to upload.
+     */
+    private String cacheControl;
+
+    /**
+     * The Amazon S3 <tt>Content-Type</tt> metadata to attache to the object to upload.
+     */
+    private String contentType;
+
+    /**
      * The Amazon S3 metadata to attach to the object to upload.
      */
     private Map<String, String> metadata;
+
+    /**
+     * Gets the Amazon S3 <tt>Cache-Control</tt> metadata to attache to the object to upload.
+     *
+     * @return the Amazon S3 <tt>Cache-Control</tt> metadata to attache to the object to upload.
+     */
+    public String getCacheControl() {
+        return this.cacheControl;
+    }
+
+    /**
+     * Gets the Amazon S3 <tt>Content-Type</tt> metadata to attache to the object to upload.
+     *
+     * @return the Amazon S3 <tt>Content-Type</tt> metadata to attache to the object to upload.
+     */
+    public String getContentType() {
+        return this.contentType;
+    }
 
     /**
      * Gets the Amazon S3 metadata to attach to the object to upload.
@@ -48,6 +76,30 @@ public class S3UploadConfig implements IUploadConfig {
      */
     public Map<String, String> getMetadata() {
         return this.metadata;
+    }
+
+    /**
+     * Sets the Amazon S3 <tt>Cache-Control</tt> metadata to attache to the object to upload.
+     *
+     * @param cacheControl the Amazon S3 <tt>Cache-Control</tt> metadata to attache to the object to upload.
+     *
+     * @return this instance.
+     */
+    public S3UploadConfig setCacheControl(final String cacheControl) {
+        this.cacheControl = cacheControl;
+        return this;
+    }
+
+    /**
+     * Sets the Amazon S3 <tt>Content-Type</tt> metadata to attache to the object to upload.
+     *
+     * @param contentType the Amazon S3 <tt>Content-Type</tt> metadata to attache to the object to upload.
+     *
+     * @return this instance.
+     */
+    public S3UploadConfig setContentType(final String contentType) {
+        this.contentType = contentType;
+        return this;
     }
 
     /**

@@ -273,6 +273,7 @@ public class S3DocumentStore implements IDocumentStore<S3UploadConfig> {
 
         // Puts the file on Amazon S3
         PutObjectRequest putObjectRequest = PutObjectRequest.builder().bucket(this.bucket).key(prefixedKeyName)
+                .contentType(uploadConfig.getContentType()).cacheControl(uploadConfig.getCacheControl())
                 .metadata(uploadConfig.getMetadata()).build();
 
         this.s3.putObject(putObjectRequest, requestBody);
